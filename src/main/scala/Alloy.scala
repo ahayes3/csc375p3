@@ -1,7 +1,6 @@
 import scala.util.Random
 
-class Alloy(val height:Int,val c1:BigDecimal,val cm1:BigDecimal,val c2:BigDecimal,val cm2:BigDecimal, val c3:BigDecimal,val cm3:BigDecimal) {
-  val width = 2*height
+class Alloy(val height:Int,width:Int,val c1:BigDecimal,val cm1:BigDecimal,val c2:BigDecimal,val cm2:BigDecimal, val c3:BigDecimal,val cm3:BigDecimal) {
   val arr = Array.fill[Cell](width,height)(randomCell(Alloy.roomTemp))
   def randomCell(startTemp:Double): Cell = {
     val maxVar = Random.between(0,25)

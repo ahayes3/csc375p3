@@ -1,7 +1,8 @@
 import org.lwjgl.glfw.GLFW.{glfwPollEvents, glfwSwapBuffers, glfwWindowShouldClose}
 import org.lwjgl.opengl.GL
-import org.lwjgl.opengl.GL11.{GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, GL_MODELVIEW, GL_PROJECTION, GL_QUADS, glBegin, glClear, glClearColor, glColor3f, glEnd, glLoadIdentity, glMatrixMode, glOrtho, glVertex3f, glVertex3i, glViewport}
+import org.lwjgl.opengl.GL11.{GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, GL_FLOAT, GL_MODELVIEW, GL_PROJECTION, GL_QUADS, GL_RGB, glBegin, glClear, glClearColor, glColor3f, glDrawPixels, glEnd, glLoadIdentity, glMatrixMode, glOrtho, glRasterPos2f, glVertex3f, glVertex3i, glViewport}
 
+import java.nio.ByteBuffer
 import java.util.concurrent.{RecursiveAction, RecursiveTask}
 
 abstract class JTree extends RecursiveTask[BigDecimal] {
@@ -78,17 +79,18 @@ class Leaf(var arr:Array[Array[Cell]],var out:Array[Array[Cell]],val tl:Coord,va
   }
 }
 
-class Jacobi(var old:Array[Array[Cell]],val t:Double,val s:Double,alloy:Alloy, val maxSteps:Int) {
+class Jacobi(var old:Array[Array[Cell]],val t:Double,val s:Double,alloy:Alloy, val maxSteps:Int,private val cellSize:Int) {
   var heat1 = t
   var heat2 = s
   val maxDiff = 40
   val minSize = 35
   val roomTemp = Alloy.roomTemp
+  var lastDiff = 0
   private val graphicMaxHeat = 200
   //var old = Array.fill[Cell](arr.length,arr(0).length)(alloy.randomCell(20)) //room temp 20
   var out:Array[Array[Cell]] = Array.ofDim[Cell](old.length,old.head.length)
   val root:JTree = build(old,Coord(0,0),Coord(old.length,old(0).length))
-  private val cellSize = 10
+
 
 
   private def build(arr:Array[Array[Cell]],tl:Coord,br:Coord): JTree = {
@@ -107,13 +109,7 @@ class Jacobi(var old:Array[Array[Cell]],val t:Double,val s:Double,alloy:Alloy, v
   }
 
   def compute(window:Option[Long]): Array[Array[Cell]] = {
-    GL.createCapabilities()
-    glClearColor(1,1,1,0)
-    glViewport(0,0,1920,1080)
-    glMatrixMode(GL_PROJECTION)
-    glLoadIdentity()
-    glOrtho(0,1920,1080,0,1,-1)
-    glMatrixMode(GL_MODELVIEW)
+
 
     var steps = 0
     var difference:BigDecimal = 100
@@ -137,7 +133,7 @@ class Jacobi(var old:Array[Array[Cell]],val t:Double,val s:Double,alloy:Alloy, v
       glColor3f(0,1,0)
       //rect(-100000,-100000,200000,200000) //large rectangle to show edge borders
       rect(0,0,100,100)
-
+      
       for(i <- old.indices) {
         for(j <- old(i).indices) {
           color = interpolateHeatColor(old(i)(j).temp)
@@ -155,7 +151,6 @@ class Jacobi(var old:Array[Array[Cell]],val t:Double,val s:Double,alloy:Alloy, v
     }
 
     out
-    //this is where the graphics stuff happens
   }
 
   private def rect(x:Int,y:Int,width:Int,height:Int): Unit = {
