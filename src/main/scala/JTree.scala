@@ -4,16 +4,16 @@ import org.lwjgl.opengl.GL11.{GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, GL_MODEL
 
 import java.util.concurrent.{RecursiveAction, RecursiveTask}
 
-abstract class JTree extends RecursiveTask[Double] {
+abstract class JTree extends RecursiveTask[BigDecimal] {
   def setArr(a:Array[Array[Cell]]):Unit
-  def computeT(): Double = {
+  def computeT(): BigDecimal = {
     compute()
   }
 }
 
 class Interior(q1:JTree,q2:JTree,q3:JTree,q4:JTree) extends JTree {
   val quads = Seq(q1,q2,q3,q4)
-  def compute(): Double = {
+  def compute(): BigDecimal = {
     q1.fork()
     q2.fork()
     q3.fork()
@@ -35,16 +35,16 @@ class Interior(q1:JTree,q2:JTree,q3:JTree,q4:JTree) extends JTree {
 }
 
 class Leaf(var arr:Array[Array[Cell]],var out:Array[Array[Cell]],val tl:Coord,val br:Coord) extends JTree {
-  override def compute(): Double = {
-    var diff:Double = 0
+  override def compute(): BigDecimal = {
+    var diff:BigDecimal = 0
     for(i <- tl.x until br.x) {
       for(j <- tl.y until br.y) {
         val oldCell = arr(i)(j)
         val neighbors = getNeighbors(i,j,arr)
         val thermConsts = (neighbors(0).cm1,neighbors(0).cm2,neighbors(0).cm3)
         val partTemps = neighbors.map(p => p.tempProps()).reduce((a,b) => (a._1 + b._1,a._2 + b._2,a._3+b._3))
-        val newTemp:Double = ((partTemps(0) * oldCell.cm1)/neighbors.length) + ((partTemps(1) * oldCell.cm2)/neighbors.length) + ((partTemps(2) * oldCell.cm3)/neighbors.length)
-        diff += math.abs(newTemp - oldCell.temp)
+        val newTemp:BigDecimal = ((partTemps(0) * oldCell.cm1)/neighbors.length) + ((partTemps(1) * oldCell.cm2)/neighbors.length) + ((partTemps(2) * oldCell.cm3)/neighbors.length)
+        diff += (newTemp - oldCell.temp).abs
         if(newTemp > 200)
           println("HElLO")
         out(i)(j) = oldCell.copy(temp = newTemp)
@@ -114,7 +114,7 @@ class Jacobi(var old:Array[Array[Cell]],val t:Double,val s:Double,alloy:Alloy, v
     glMatrixMode(GL_MODELVIEW)
 
     var steps = 0
-    var difference:Double = 100
+    var difference:BigDecimal = 100
     var color:(Float,Float,Float) = null
 
     while(!glfwWindowShouldClose(window.get) && difference > maxDiff && steps < maxSteps) {
@@ -174,18 +174,13 @@ class Jacobi(var old:Array[Array[Cell]],val t:Double,val s:Double,alloy:Alloy, v
     heat2 = s
   }
   private def updateHeatingWaveSynced(amplitude:Double): Unit = { //might look cool, we'll see
-    val heat = math.sin(2 * math.Pi * 3 * (System.currentTimeMillis()/1000.0))
-  }
-  //i did something better, should be unused but i like to look at this monstrosity
-  def getDifference(): Double = {
-    old.indices.map(_.toDouble).reduce[Double]((a,b) => a + old(b.toInt).indices.map(_.toDouble).reduce[Double]((i,j) => i + math.abs(old(b.toInt)(j.toInt).temp - out(b.toInt)(j.toInt).temp))) //why do i do this to myself
+    val heat = math.sin(2 * math.Pi * 3 * (System.currentTimeMillis() / 1000.0))
   }
 
-  def interpolateHeatColor(heat:Double): (Float,Float,Float) = {
-    val t = ((heat - roomTemp) / (graphicMaxHeat - roomTemp)).toFloat
-    val r = t
-    val g = (1 - (2*math.abs(.5 - t))).toFloat
-    val b = 1 - t
+  def interpolateHeatColor(heat:BigDecimal): (Float,Float,Float) = {
+    val r = ((heat - roomTemp) / (graphicMaxHeat - roomTemp)).toFloat
+    val g = (1 - (2*(.5 - t).abs)).toFloat
+    val b = (1 - t).toFloat
     (r,g,b)
   }
 }

@@ -1,6 +1,6 @@
 import scala.util.Random
 
-class Alloy(val height:Int,val c1:Double,val cm1:Double,val c2:Double,val cm2:Double, val c3:Double,val cm3:Double) {
+class Alloy(val height:Int,val c1:BigDecimal,val cm1:Double,val c2:BigDecimal,val cm2:Double, val c3:BigDecimal,val cm3:Double) {
   val width = 2*height
   val arr = Array.fill[Cell](width,height)(randomCell(Alloy.roomTemp))
   def randomCell(startTemp:Double): Cell = {
@@ -26,8 +26,8 @@ object Alloy {
 }
 
 
-case class Cell(val c1:Double,val cm1:Double,val c2:Double,val cm2:Double, val c3:Double,val cm3:Double,var temp:Double) {
-  def tempProps(): (Double,Double,Double) = {
-    (c1 * temp, c2 * temp, c3* temp)
+case class Cell(val c1:BigDecimal,val cm1:Double,val c2:BigDecimal,val cm2:Double, val c3:BigDecimal,val cm3:Double,var temp:BigDecimal) {
+  def tempProps(): (BigDecimal,BigDecimal,BigDecimal) = {
+    (c1 * temp, c2 * temp, c3 * temp)
   }
 }
