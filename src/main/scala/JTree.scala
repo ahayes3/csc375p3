@@ -37,18 +37,20 @@ class Interior(q1:JTree,q2:JTree,q3:JTree,q4:JTree) extends JTree {
 class Leaf(var arr:Array[Array[Cell]],var out:Array[Array[Cell]],val tl:Coord,val br:Coord) extends JTree {
   override def compute(): BigDecimal = {
     var diff:BigDecimal = 0
+
     for(i <- tl.x until br.x) {
       for(j <- tl.y until br.y) {
         val oldCell = arr(i)(j)
         val neighbors = getNeighbors(i,j,arr)
+
         val thermConsts = (neighbors(0).cm1,neighbors(0).cm2,neighbors(0).cm3)
-        val partTemps = neighbors.map(p => p.tempProps()).reduce((a,b) => (a._1 + b._1,a._2 + b._2,a._3+b._3))
-        val newTemp:BigDecimal = ((partTemps(0) * oldCell.cm1)/neighbors.length) + ((partTemps(1) * oldCell.cm2)/neighbors.length) + ((partTemps(2) * oldCell.cm3)/neighbors.length)
+        val partTemps = neighbors.map(p => p.tempProps()).reduce((a,b) => ((a._1 + b._1),(a._2 + b._2),(a._3+b._3)))
+        val adjusted:(BigDecimal,BigDecimal,BigDecimal) = ((partTemps._1 * oldCell.cm1), ((partTemps._2 * oldCell.cm2)), ((partTemps._3 * oldCell.cm3)))
+        val newTemp:BigDecimal = (adjusted._1 + adjusted._2 + adjusted._3)/neighbors.length
+
         diff += (newTemp - oldCell.temp).abs
-        if(newTemp > 200)
-          println("HElLO")
+
         out(i)(j) = oldCell.copy(temp = newTemp)
-        //code here returns total difference
       }
     }
     diff
@@ -56,7 +58,7 @@ class Leaf(var arr:Array[Array[Cell]],var out:Array[Array[Cell]],val tl:Coord,va
 
   override def setArr(a: Array[Array[Cell]]): Unit = (arr = a)
 
-  private def tuple3toSeq[T](t: (T,T,T)): Seq[T] = Seq(t._1,t._2,t._3) //converts a tuple of 3 of the same type to a Seq
+  private def tuple3toSeq[T](t: (T,T,T)): Seq[T] = Seq(t._1,t._2,t._3)
 
   def getNeighbors(x:Int,y:Int,arr:Array[Array[Cell]]): IndexedSeq[Cell] = {
     var neighbors = IndexedSeq[Cell]()
@@ -79,14 +81,14 @@ class Leaf(var arr:Array[Array[Cell]],var out:Array[Array[Cell]],val tl:Coord,va
 class Jacobi(var old:Array[Array[Cell]],val t:Double,val s:Double,alloy:Alloy, val maxSteps:Int) {
   var heat1 = t
   var heat2 = s
-  val maxDiff = 30
+  val maxDiff = 40
   val minSize = 35
   val roomTemp = Alloy.roomTemp
   private val graphicMaxHeat = 200
-  private val cellSize = 10
   //var old = Array.fill[Cell](arr.length,arr(0).length)(alloy.randomCell(20)) //room temp 20
   var out:Array[Array[Cell]] = Array.ofDim[Cell](old.length,old.head.length)
   val root:JTree = build(old,Coord(0,0),Coord(old.length,old(0).length))
+  private val cellSize = 10
 
 
   private def build(arr:Array[Array[Cell]],tl:Coord,br:Coord): JTree = {
@@ -178,7 +180,8 @@ class Jacobi(var old:Array[Array[Cell]],val t:Double,val s:Double,alloy:Alloy, v
   }
 
   def interpolateHeatColor(heat:BigDecimal): (Float,Float,Float) = {
-    val r = ((heat - roomTemp) / (graphicMaxHeat - roomTemp)).toFloat
+    val t = ((heat - roomTemp) / (graphicMaxHeat - roomTemp)).toFloat
+    val r = t
     val g = (1 - (2*(.5 - t).abs)).toFloat
     val b = (1 - t).toFloat
     (r,g,b)

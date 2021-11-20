@@ -1,0 +1,27 @@
+[0m[[0m[0mdebug[0m] [0m[0mCreated transactional ClassFileManager with tempDir = /home/ahayes/IdeaProjects/csc375p3/target/scala-3.0.2/classes.bak[0m
+[0m[[0m[0mdebug[0m] [0m[0mAbout to delete class files:[0m
+[0m[[0m[0mdebug[0m] [0m[0mWe backup class files:[0m
+[0m[[0m[0mdebug[0m] [0m[0mRegistering generated classes:[0m
+[0m[[0m[0mdebug[0m] [0m[0m	Coord$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	Jacobi.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	Leaf.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	Cell.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	Interior.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	Main.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	Main$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	Coord.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	JTree.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	Alloy.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	Cell$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	Coord$.tasty[0m
+[0m[[0m[0mdebug[0m] [0m[0m	Jacobi.tasty[0m
+[0m[[0m[0mdebug[0m] [0m[0m	Leaf.tasty[0m
+[0m[[0m[0mdebug[0m] [0m[0m	Cell.tasty[0m
+[0m[[0m[0mdebug[0m] [0m[0m	Interior.tasty[0m
+[0m[[0m[0mdebug[0m] [0m[0m	Main.tasty[0m
+[0m[[0m[0mdebug[0m] [0m[0m	Main$.tasty[0m
+[0m[[0m[0mdebug[0m] [0m[0m	Coord.tasty[0m
+[0m[[0m[0mdebug[0m] [0m[0m	JTree.tasty[0m
+[0m[[0m[0mdebug[0m] [0m[0m	Alloy.tasty[0m
+[0m[[0m[0mdebug[0m] [0m[0m	Cell$.tasty[0m
+[0m[[0m[0mdebug[0m] [0m[0mRemoving the temporary directory used for backing up class files: /home/ahayes/IdeaProjects/csc375p3/target/scala-3.0.2/classes.bak[0m
